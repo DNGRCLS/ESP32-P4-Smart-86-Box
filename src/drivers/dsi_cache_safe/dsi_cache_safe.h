@@ -1,0 +1,16 @@
+#pragma once
+/* Use P4Box's cache-safe MIPI-DSI DPI driver (see dsi_cache_safe_cfg.h). Include after esp_lcd_mipi_dsi.h. */
+#include "esp_lcd_mipi_dsi.h"
+#define esp_lcd_new_panel_dpi p4box_esp_lcd_new_panel_dpi
+#define esp_lcd_dpi_panel_get_frame_buffer p4box_esp_lcd_dpi_panel_get_frame_buffer
+#define esp_lcd_dpi_panel_register_event_callbacks p4box_esp_lcd_dpi_panel_register_event_callbacks
+#define esp_lcd_dpi_panel_set_color_conversion p4box_esp_lcd_dpi_panel_set_color_conversion
+#define esp_lcd_dpi_panel_set_pattern p4box_esp_lcd_dpi_panel_set_pattern
+#define esp_lcd_dpi_panel_enable_dma2d p4box_esp_lcd_dpi_panel_enable_dma2d
+
+esp_err_t esp_lcd_new_panel_dpi(esp_lcd_dsi_bus_handle_t bus, const esp_lcd_dpi_panel_config_t *panel_config, esp_lcd_panel_handle_t *ret_panel);
+esp_err_t esp_lcd_dpi_panel_get_frame_buffer(esp_lcd_panel_handle_t dpi_panel, uint32_t fb_num, void **fb0, ...);
+esp_err_t esp_lcd_dpi_panel_register_event_callbacks(esp_lcd_panel_handle_t dpi_panel, const esp_lcd_dpi_panel_event_callbacks_t *cbs, void *user_ctx);
+esp_err_t esp_lcd_dpi_panel_set_color_conversion(esp_lcd_panel_handle_t dpi_panel, const esp_lcd_color_conv_config_t *config);
+esp_err_t esp_lcd_dpi_panel_set_pattern(esp_lcd_panel_handle_t dpi_panel, mipi_dsi_pattern_type_t pattern);
+esp_err_t esp_lcd_dpi_panel_enable_dma2d(esp_lcd_panel_handle_t dpi_panel);
