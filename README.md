@@ -226,11 +226,10 @@ P4Box/
 
 ## Known limits
 
-- The alarms (1.1.0) and the Weather app (1.2.0) have been checked in the desktop simulator, and the weather parsers against OpenWeather's documented answers, but not yet on the panel. Everything compiles cleanly for both chip variants with core 3.3.12.
 - RS485 (GPIO 47/48) is left free for later.
-- USB audio (1.3.0) has been checked off-device (driver build, rate conversion) but not yet with a dongle on the panel.
-- The microphone and camera connector are unused.
-- The battery clock (1.4.0) depends on the experimental VBAT support described above. The DS3231 path has been checked against the datasheet but not with a module.
+- USB audio has been checked off-device (driver build, rate conversion) but not yet with a dongle on the panel.
+- The microphone is unused.
+- The battery clock depends on the experimental VBAT support described above. The DS3231 path has been checked against the datasheet but not with a module.
 
 ## Licences
 
