@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P4Box Settings</title>
+<style>
+:root{--bg:#0b0e13;--card:#161b22;--card2:#212833;--line:#2d3540;--text:#e8edf3;--muted:#8a96a6;--accent:#3d8bff;--ok:#3fb950;--warn:#e3b341;--err:#f85149}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f6f9;--card:#fff;--card2:#eef1f5;--line:#d9dee5;--text:#18202a;--muted:#5d6876}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:760px;margin:0 auto}
+h1{font-size:24px;margin:0 0 10px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;color:var(--muted)}
+.chip b{color:var(--text);font-weight:600}
+.chip.ok b{color:var(--ok)}.chip.warn b{color:var(--warn)}
+main{max-width:760px;margin:0 auto;padding:8px 16px 60px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:600}
+.row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row label{flex:1}
+.row label.sw{flex:none}
+.row small{display:block;color:var(--muted);font-size:13px}
+select,input[type=text],input[type=password]{background:var(--card2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font:inherit;min-width:0}
+select{max-width:60%}
+input[type=range]{width:100%;accent-color:var(--accent)}
+button{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.sec{background:var(--card2);color:var(--text);border:1px solid var(--line)}
+button.danger{background:#7a2323}
+button:disabled{opacity:.5;cursor:default}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.sw{position:relative;width:50px;height:28px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;background:var(--card2);border:1px solid var(--line);border-radius:28px;transition:.2s}
+.sw span:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:var(--accent);border-color:var(--accent)}
+.sw input:checked+span:before{transform:translateX(22px)}
+.nets{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.net{display:flex;justify-content:space-between;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer}
+.net span{color:var(--muted);font-size:14px}
+.note{color:var(--warn);font-size:14px;margin-top:6px}
+pre{white-space:pre-wrap;background:var(--card2);border-radius:10px;padding:12px;font-size:13px;margin:0;color:var(--muted)}
+.bar{height:8px;background:var(--card2);border-radius:8px;overflow:hidden;margin-top:10px;display:none}
+.bar div{height:100%;width:0;background:var(--accent);transition:width .2s}
+.np{display:flex;flex-direction:column;gap:4px}
+.np b{font-size:20px}
+.np .t{color:var(--muted)}
+.ctl{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.ctl button{min-width:52px}
+.ctl input[type=range]{flex:1;min-width:140px}
+.st{display:grid;grid-template-columns:1fr auto;gap:6px;padding:8px 0;border-top:1px solid var(--line)}
+.st .f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.st input{width:100%}
+.st .a{display:flex;gap:6px;align-items:center}
+.st .a button{padding:8px 10px}
+.st.on input:first-child{border-color:var(--accent)}
+@media (max-width:560px){.st{grid-template-columns:1fr}.st .a{justify-content:flex-end}}
+.pill{font-size:12px;border:1px solid var(--line);border-radius:10px;padding:2px 8px;color:var(--muted)}
+.pill.live{color:var(--ok);border-color:var(--ok)}
+#login{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+#login .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:360px;width:100%;text-align:center}
+#login input{width:100%;font-size:28px;text-align:center;letter-spacing:8px;margin:14px 0}
+.lockst{display:flex;gap:12px;flex-wrap:wrap}
+.lockst>div{flex:1;min-width:150px;background:var(--card2);border-radius:12px;padding:12px}
+.lockst b{font-size:20px;display:block;margin:4px 0}
+.red{color:var(--err)}.green{color:var(--ok)}
+.log{font-size:13px;color:var(--muted);max-height:220px;overflow:auto}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#2b3442;color:#fff;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%}
+#toast.show{opacity:1}
+.full{width:100%;margin-top:8px}
+.al{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.al:first-child{border-top:0}
+.al input[type=time]{background:var(--card2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:7px 8px;font:600 20px system-ui,sans-serif}
+.al.off input[type=time]{color:var(--muted)}
+.days{display:flex;gap:4px}
+.days label{width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
+.days input{display:none}
+.days input:checked+span{color:#fff}
+.days label:has(input:checked){background:var(--accent);border-color:var(--accent)}
+.al .lbl{flex:1;min-width:120px}
+.al .del{background:transparent;color:var(--err);padding:6px 10px;font-size:18px}
+.ring{background:#3a2412;border:1px solid #ff8a3d;border-radius:12px;padding:12px;margin-bottom:12px;display:none}
+.ring b{color:#ff8a3d;font-size:18px}
+.amuted{color:var(--muted);font-size:14px}
+.wnow{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--card2);border-radius:12px;padding:14px;margin-bottom:10px}
+.wnow .t{font-size:44px;font-weight:300;line-height:1}
+.wnow .d{display:flex;flex-direction:column;gap:2px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px;width:100%}
+.wgrid div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;color:var(--muted)}
+.wgrid b{display:block;color:var(--text);font-size:17px;font-weight:600}
+.loc{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.loc:first-child{border-top:0}
+.loc label{flex:1;cursor:pointer}
+.loc input[type=radio]{accent-color:var(--accent);width:18px;height:18px}
+</style>
+</head>
+<body>
+<header>
+  <h1>P4Box</h1>
+  <div class="chips">
+    <div class="chip" id="c-net">Network <b>-</b></div>
+    <div class="chip" id="c-time">Time <b>-</b></div>
+    <div class="chip" id="c-fw">Firmware <b>-</b></div>
+  </div>
+</header>
+<main>
+
+<section>
+  <h2>Radio</h2>
+  <div class="np"><div><b id="r-name">-</b> <span class="pill" id="r-state">stopped</span></div>
+    <div class="t" id="r-title"></div><small class="t" id="r-info"></small></div>
+  <div class="ctl">
+    <button class="sec" id="r-prev">&#9198;</button><button id="r-play">&#9654; Play</button><button class="sec" id="r-next">&#9197;</button>
+    <span>&#128264;</span><input type="range" min="0" max="100" id="r-vol">
+  </div>
+  <div class="row" style="margin-top:8px"><label>Resume the radio after a restart</label><label class="sw"><input type="checkbox" id="r-resume"><span></span></label></div>
+  <div class="row"><label>Play on a USB / Bluetooth audio device when one is plugged in<small id="r-out">-</small></label><label class="sw"><input type="checkbox" id="r-outusb"><span></span></label></div>
+  <h2 style="margin-top:16px">Stations</h2>
+  <div id="r-list"></div>
+  <div class="st"><div class="f"><input type="text" id="r-new-name" placeholder="New station name"><input type="text" id="r-new-url" placeholder="http://... stream address"></div>
+    <div class="a"><button id="r-add">Add</button></div></div>
+  <div class="btns"><button id="r-save">Save station list</button></div>
+  <h2 style="margin-top:16px">Find stations</h2>
+  <div class="ctl"><input type="text" id="r-q" placeholder="Name, city or genre (e.g. Toronto, jazz)" style="flex:1"><button id="r-search">Search</button></div>
+  <div class="nets" id="r-results"></div>
+</section>
+
+<section id="sec-alarms">
+  <h2>Alarms</h2>
+  <div class="ring" id="a-ring"><b id="a-ring-t">Alarm</b><div class="btns"><button id="a-snooze">Snooze</button><button class="danger" id="a-stop">Stop</button></div></div>
+  <div class="amuted" id="a-next"></div>
+  <div id="a-list"></div>
+  <div class="btns"><button class="sec" id="a-add">+ New alarm</button></div>
+  <div class="row" style="margin-top:8px"><label>Snooze length</label><select data-k="alarm_snooze_min" data-num>
+    <option value="1">1 minute</option><option value="2">2 minutes</option><option value="3">3 minutes</option><option value="4">4 minutes</option><option value="5">5 minutes</option>
+    <option value="6">6 minutes</option><option value="7">7 minutes</option><option value="8">8 minutes</option><option value="9">9 minutes</option><option value="10">10 minutes</option></select></div>
+  <div class="row"><label>Alarm volume</label></div>
+  <input type="range" min="10" max="100" data-k="alarm_volume">
+  <div class="row"><label>Gentle wake<small>The volume rises over the first 30 seconds</small></label><label class="sw"><input type="checkbox" data-k="alarm_fade"><span></span></label></div>
+  <div class="row"><label>Stop ringing after</label><select data-k="alarm_ring_min" data-num><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">60 minutes</option></select></div>
+  <div class="amuted" id="a-station"></div>
+</section>
+
+<section id="sec-weather">
+  <h2>Weather</h2>
+  <div class="wnow" id="w-now"><span class="amuted">-</span></div>
+  <div class="row"><label>OpenWeather API key<small id="w-keyst">-</small></label>
+    <input type="password" id="w-key" placeholder="paste your key" autocomplete="off" style="width:200px"><button id="w-keysave">Save</button></div>
+  <div class="amuted">No key yet? <a href="https://home.openweathermap.org/users/sign_up" target="_blank" rel="noopener" style="color:var(--accent)">Sign up free</a>, then copy it from <a href="https://home.openweathermap.org/api_keys" target="_blank" rel="noopener" style="color:var(--accent)">API keys</a>. New keys can take up to 2 hours to start working.
+    For the UV index, hourly and 8-day forecasts and alerts, add the <a href="https://openweathermap.org/price#one_call" target="_blank" rel="noopener" style="color:var(--accent)">One Call subscription</a> (first 1,000 calls a day free; the panel uses about 300).</div>
+  <h2 style="margin-top:16px">Places</h2>
+  <div id="w-locs"></div>
+  <div class="ctl"><input type="text" id="w-q" placeholder="Town (Barrie, ON) or postal / ZIP code" style="flex:1"><button id="w-search">Search</button></div>
+  <div class="nets" id="w-results"></div>
+  <div class="row" style="margin-top:8px"><label>Units</label><select data-k="wx_units" data-num><option value="0">Metric (&deg;C, km/h, kPa)</option><option value="1">Imperial (&deg;F, mph, inHg)</option></select></div>
+  <div class="row"><label>Air quality scale</label><select data-k="wx_aq_scale" data-num><option value="0">AQHI (Canada)</option><option value="1">US AQI</option><option value="2">OpenWeather (1-5)</option></select></div>
+  <div class="row"><label>Show the weather on the home screen</label><label class="sw"><input type="checkbox" data-k="wx_home"><span></span></label></div>
+</section>
+
+<section>
+  <h2>Photos</h2>
+  <div id="p-sd" class="t" style="color:var(--muted)">-</div>
+  <div class="row"><label>Slideshow / photo frame interval</label>
+    <select data-k="photo_interval_s" data-num><option value="3">3 seconds</option><option value="5">5 seconds</option><option value="10">10 seconds</option>
+      <option value="15">15 seconds</option><option value="30">30 seconds</option><option value="60">1 minute</option><option value="120">2 minutes</option><option value="250">4 minutes</option></select></div>
+  <div class="row"><label>Shuffle</label><label class="sw"><input type="checkbox" data-k="photo_shuffle"><span></span></label></div>
+  <div class="row"><label>Fill the screen<small>Crops photos instead of showing black bars</small></label><label class="sw"><input type="checkbox" data-k="photo_fill"><span></span></label></div>
+  <div class="row"><label>Include sub-folders</label><label class="sw"><input type="checkbox" data-k="photo_recursive"><span></span></label></div>
+  <div class="row"><label>Photo frame folder<small>Folder on the card, empty = whole card</small></label><input type="text" data-k="photo_dir" placeholder="(whole card)"></div>
+  <h2 style="margin-top:16px">Files</h2>
+  <div class="ctl" style="margin-top:0"><button class="sec" id="p-up">&#8593; Up</button><b id="p-path" style="flex:1">/</b><button class="sec" id="p-frame">Use for photo frame</button></div>
+  <div class="nets" id="p-list"></div>
+  <div class="row"><label>Upload photos<small>JPEG files up to 20 MB (baseline, not progressive)</small></label></div>
+  <input type="file" id="p-files" accept=".jpg,.jpeg,image/jpeg" multiple>
+  <div class="bar" id="p-bar"><div></div></div>
+  <div class="btns"><button id="p-upload">Upload to this folder</button><button class="sec" id="p-mkdir">New folder</button><button class="sec" id="p-refresh">Refresh</button></div>
+</section>
+
+<section>
+  <h2>Wi-Fi</h2>
+  <div class="row"><label>Saved network<small id="wifi-state">-</small></label></div>
+  <div class="btns">
+    <button id="b-scan">Scan for networks</button>
+    <button class="sec" id="b-forget">Forget network</button>
+    <button class="sec" id="b-portal">Setup hotspot</button>
+  </div>
+  <div class="nets" id="nets"></div>
+  <div id="join" style="display:none;margin-top:12px">
+    <div class="row"><label>Network</label><input type="text" id="j-ssid"></div>
+    <div class="row"><label>Password</label><input type="password" id="j-pass" autocomplete="new-password"></div>
+    <div class="btns"><button id="b-join">Connect</button><button class="sec" id="b-joincancel">Cancel</button></div>
+  </div>
+</section>
+
+<section id="sec-lock">
+  <h2>Lock</h2>
+  <div id="k-none" style="display:none">Create the admin code on the panel first: open the Lock app. Until then this page has no password.</div>
+  <div id="k-main">
+  <div class="lockst">
+    <div><span id="k-r1n">Door</span><b id="k-r1s">-</b><small id="k-r1x"></small><div class="btns"><button id="k-unlock">Unlock</button><button class="sec" id="k-lock">Lock</button></div></div>
+    <div><span id="k-r2n">Relay 2</span><b id="k-r2s">-</b><small>&nbsp;</small><div class="btns"><button class="sec" id="k-r2">Switch</button></div></div>
+  </div>
+  <div class="note" id="k-webnote"></div>
+  <h2 style="margin-top:16px">User codes</h2>
+  <div id="k-users"></div>
+  <div class="st"><div class="f"><input type="text" id="k-new-label" placeholder="Name (e.g. Guest)" maxlength="23"><input type="password" inputmode="numeric" id="k-new-code" placeholder="4-6 digit code" maxlength="6"></div><div class="a"><button id="k-add">Add</button></div></div>
+  <div class="row"><label>Change admin code<small>Exactly 6 digits</small></label><input type="password" inputmode="numeric" maxlength="6" id="k-admin" placeholder="new code" style="width:130px"><button class="sec" id="k-admin-go">Change</button></div>
+  <h2 style="margin-top:16px">Relays</h2>
+  <div class="row"><label>Relay 1 name</label><input type="text" id="k-n1" maxlength="31"></div>
+  <div class="row"><label>After unlocking</label><select id="k-mode"><option value="0">Stay unlocked until locked</option><option value="1">Lock again after a delay</option></select></div>
+  <div class="row"><label>Delay before locking again (seconds)</label><input type="text" id="k-pulse" style="width:80px"></div>
+  <div class="row"><label>Relay 2 name</label><input type="text" id="k-n2" maxlength="31"></div>
+  <div class="row"><label>Relay 2 needs a code on the panel</label><label class="sw"><input type="checkbox" id="k-r2pin"><span></span></label></div>
+  <div class="row"><label>Allow unlocking from this web page</label><label class="sw"><input type="checkbox" id="k-web"><span></span></label></div>
+  <div class="row"><label>Wrong codes before lockout</label><select id="k-att"><option>3</option><option>5</option><option>10</option></select></div>
+  <div class="row"><label>First lockout (seconds, doubles each time)</label><input type="text" id="k-lo" style="width:80px"></div>
+  <div class="btns"><button id="k-save">Save lock settings</button><button class="sec" id="k-logout">Sign out</button></div>
+  <h2 style="margin-top:16px">Recent activity</h2>
+  <div class="log" id="k-log"></div>
+  </div>
+</section>
+
+<section>
+  <h2>Display</h2>
+  <div class="row"><label>Brightness</label></div>
+  <input type="range" min="5" max="100" data-k="brightness">
+  <div class="row"><label>Screensaver after</label>
+    <select data-k="screensaver_s" data-num>
+      <option value="0">Off</option><option value="30">30 seconds</option><option value="60">1 minute</option>
+      <option value="120">2 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option>
+      <option value="1800">30 minutes</option></select></div>
+  <div class="row"><label>Screensaver shows</label><select data-k="saver_mode" data-num><option value="0">Clock</option><option value="1">Photo frame (microSD)</option></select></div>
+  <div class="row"><label>Time over the photos</label><label class="sw"><input type="checkbox" data-k="photo_frame_clock"><span></span></label></div>
+  <div class="row"><label>Dim the screen at night<small>Dims after 30 s without a touch; a tap brings it back</small></label><label class="sw"><input type="checkbox" data-k="night_dim"><span></span></label></div>
+  <div class="row"><label>Night starts</label><select data-k="night_start_h" data-num class="hours"></select></div>
+  <div class="row"><label>Night ends</label><select data-k="night_end_h" data-num class="hours"></select></div>
+  <div class="row"><label>Night brightness</label></div>
+  <input type="range" min="1" max="100" data-k="night_brightness">
+</section>
+
+<section>
+  <h2>Time</h2>
+  <div class="row"><label>Region</label><select id="tz-region"></select></div>
+  <div class="row"><label>City</label><select id="tz-city"></select></div>
+  <div class="row"><label>Daylight saving</label>
+    <select data-k="dst_mode" data-num><option value="0">Automatic</option><option value="1">Always standard time</option><option value="2">Always daylight time</option></select></div>
+  <div class="note" id="tz-note"></div>
+  <div class="row"><label>24-hour time</label><label class="sw"><input type="checkbox" data-k="clock_24h"><span></span></label></div>
+  <div class="row"><label>Show seconds</label><label class="sw"><input type="checkbox" data-k="clock_seconds"><span></span></label></div>
+  <div class="row"><label>Clock style</label><select data-k="clock_face" data-num><option value="0">Digital</option><option value="1">Analog</option></select></div>
+  <div class="row"><label>Time server<small>NTP host name</small></label><input type="text" data-k="ntp_server"></div>
+  <div class="row"><label>Keep time on the RTC battery<small>Lets the clock (and your alarms) survive a power cut with no network. Needs a rechargeable cell on the RTC battery header.</small></label><label class="sw"><input type="checkbox" data-k="rtc_vbat"><span></span></label></div>
+  <div class="row"><label>Battery clock</label><span id="rtc-st" style="text-align:right;white-space:pre-line">-</span></div>
+  <div class="row"><label>Custom time-zone rule<small>Advanced: POSIX TZ string, e.g. <code>EST5EDT,M3.2.0,M11.1.0</code>. Leave empty to use the city above.</small></label><input type="text" data-k="tz_custom" placeholder="(none)"></div>
+  <div class="row"><label>Rule in use</label><code id="tz-posix">-</code></div>
+</section>
+
+<section>
+  <h2>Device</h2>
+  <div class="row"><label>Device name<small>Also the web address: http://name.local</small></label><input type="text" data-k="hostname" maxlength="31"></div>
+  <div class="row"><label>Province (for calendar holidays)</label>
+    <select data-k="province">
+      <option value="AB">Alberta</option><option value="BC">British Columbia</option><option value="MB">Manitoba</option>
+      <option value="NB">New Brunswick</option><option value="NL">Newfoundland and Labrador</option><option value="NS">Nova Scotia</option>
+      <option value="NT">Northwest Territories</option><option value="NU">Nunavut</option><option value="ON">Ontario</option>
+      <option value="PE">Prince Edward Island</option><option value="QC">Quebec</option><option value="SK">Saskatchewan</option>
+      <option value="YT">Yukon</option></select></div>
+</section>
+
+<section>
+  <h2>System</h2>
+  <pre id="info">-</pre>
+  <div class="row" style="margin-top:8px"><label>Firmware update<small>Choose <b>P4Box.ino.bin</b> (Arduino IDE: Sketch &gt; Export Compiled Binary). Not the .merged or .bootloader file.</small></label></div>
+  <input type="file" id="fw" accept=".bin">
+  <div class="bar" id="fw-bar"><div></div></div>
+  <div class="row" style="margin-top:8px"><label>Wi-Fi module (ESP32-C6) firmware<small id="c6-info">-</small><small>Only needed if Wi-Fi does not work. Choose <b>esp32c6-v2.12.13.bin</b> (in the zip's prebuilt folder).</small></label></div>
+  <input type="file" id="c6fw" accept=".bin">
+  <div class="bar" id="c6-bar"><div></div></div>
+  <div class="btns"><button class="sec" id="b-c6">Update Wi-Fi module</button></div>
+  <div class="btns">
+    <button id="b-upload">Upload firmware</button>
+    <button class="sec" id="b-reboot">Restart</button>
+    <button class="danger" id="b-reset">Factory reset</button>
+  </div>
+</section>
+</main>
+<div id="toast"></div>
+<div id="login"><div class="box"><h1>P4Box</h1><div>Enter the lock admin code</div>
+  <input type="password" inputmode="numeric" maxlength="6" id="l-code" autocomplete="off">
+  <button id="l-go" style="width:100%">Sign in</button><div id="l-msg" class="red" style="margin-top:10px"></div></div></div>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let S={}, TZ=[], saveTimer=null, pending={};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200)}
+let TOKEN=sessionStorage.getItem('p4tok')||'';
+async function api(path,body,raw){
+  const h={'X-Auth':TOKEN};if(body!==undefined&&!raw)h['Content-Type']='application/json';
+  const o=body===undefined?{headers:h}:{method:'POST',headers:h,body:raw?body:JSON.stringify(body)};
+  const r=await fetch(path,o);
+  if(r.status===401){showLogin();throw new Error('Sign in required')}
+  if(!r.ok) throw new Error(await r.text()); return r.json();
+}
+function showLogin(){$('#login').style.display='flex';$('#l-code').focus()}
+$('#l-go').onclick=async()=>{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:$('#l-code').value})});
+  if(r.ok){TOKEN=(await r.json()).token;sessionStorage.setItem('p4tok',TOKEN);$('#login').style.display='none';$('#l-code').value='';start()}else{$('#l-msg').textContent=await r.text();$('#l-code').value=''}};
+$('#l-code').addEventListener('keydown',e=>{if(e.key==='Enter')$('#l-go').click()});
+function fmtHour(h){if(S.clock_24h)return String(h).padStart(2,'0')+':00';const x=h%12||12;return x+(h<12?' AM':' PM')}
+function fillHours(){$$('.hours').forEach(sel=>{const k=sel.dataset.k;sel.innerHTML='';for(let h=0;h<24;h++){const o=document.createElement('option');o.value=h;o.textContent=fmtHour(h);sel.appendChild(o)}sel.value=S[k]})}
+function render(){
+  $$('[data-k]').forEach(el=>{const k=el.dataset.k;if(!(k in S))return;
+    if(el.type==='checkbox')el.checked=!!S[k];else if(document.activeElement!==el)el.value=S[k]});
+  fillHours();
+  $('#tz-posix').textContent=S.tz_posix||'-';
+  const z=TZ.find(z=>z.id===S.tz_id);
+  if(z){$('#tz-region').value=z.region;fillCities(z.region);$('#tz-city').value=z.id}
+  renderAlarms();
+  renderWxSettings();
+  $('#tz-note').textContent=S.tz_custom?'Custom rule active.':(z&&z.note)||(z&&!z.dst?'This zone does not change clocks seasonally.':'');
+}
+function fillCities(region){const c=$('#tz-city');c.innerHTML='';TZ.filter(z=>z.region===region).forEach(z=>{const o=document.createElement('option');o.value=z.id;o.textContent=z.city;c.appendChild(o)})}
+function queue(k,v){pending[k]=v;S[k]=v;clearTimeout(saveTimer);saveTimer=setTimeout(flush,400)}
+async function flush(){const p=pending;pending={};try{S=await api('/api/settings',p);render();toast('Saved')}catch(e){toast('Save failed: '+e.message)}}
+$$('[data-k]').forEach(el=>{
+  const k=el.dataset.k;
+  const ev=(el.type==='range')?'change':(el.tagName==='INPUT'&&el.type==='text')?'change':'change';
+  el.addEventListener(ev,()=>{let v=el.type==='checkbox'?el.checked:el.value;if(el.dataset.num!==undefined||el.type==='range')v=Number(v);queue(k,v)});
+});
+$('#tz-region').addEventListener('change',e=>{fillCities(e.target.value);queue('tz_id',$('#tz-city').value)});
+$('#tz-city').addEventListener('change',e=>queue('tz_id',e.target.value));
+
+async function status(){
+  try{const s=await api('/api/status');
+    const cn=$('#c-net');let t='Offline',cls='warn';
+    if(s.active==='ethernet'){t='Ethernet '+s.eth.ip;cls='ok'}else if(s.active==='wifi'){t='Wi-Fi '+s.wifi.ip;cls='ok'}else if(s.portal.active){t='Setup hotspot'}
+    cn.className='chip '+cls;cn.innerHTML='Network <b>'+t+'</b>';
+    if(s.rtc)$('#rtc-st').textContent=s.rtc.status;
+    const ct=$('#c-time');ct.className='chip '+(s.time_synced?'ok':'warn');ct.innerHTML='Time <b>'+(s.time_synced?s.local_time:'not synced')+'</b>';
+    $('#c-fw').innerHTML='Firmware <b>'+s.firmware+'</b>';
+    $('#info').textContent=s.info;
+    renderAlarmStatus(s.alarm);
+    $('#c6-info').textContent='Installed: '+(s.c6_known?s.c6_firmware:'too old to report a version')+' - this firmware expects '+s.c6_expected+(s.c6_msg?(' - '+s.c6_msg+(s.c6_pct>=0?' '+s.c6_pct+'%':'')):'');
+    let w='Not set up';if(s.wifi.connected)w=s.wifi.ssid+' - connected, '+s.wifi.rssi+' dBm, '+s.wifi.ip;else if(s.wifi.connecting)w='Connecting to '+s.wifi.ssid+'...';else if(s.wifi.configured)w=s.wifi.ssid+' - not connected';
+    $('#wifi-state').textContent=w;
+    $('#b-portal').textContent=s.portal.active?'Stop setup hotspot':'Start setup hotspot';$('#b-portal').dataset.on=s.portal.active?1:0;
+  }catch(e){}
+}
+$('#b-scan').onclick=async()=>{const b=$('#b-scan');b.disabled=true;b.textContent='Scanning...';
+  try{const list=await api('/api/wifi/scan');const n=$('#nets');n.innerHTML='';
+    if(!list.length)n.textContent='No networks found.';
+    list.forEach(r=>{const d=document.createElement('div');d.className='net';d.innerHTML='<b></b><span></span>';d.querySelector('b').textContent=r.ssid;d.querySelector('span').textContent=(r.secure?'secured  ':'open  ')+r.rssi+' dBm';
+      d.onclick=()=>{$('#join').style.display='block';$('#j-ssid').value=r.ssid;$('#j-pass').value='';$('#j-pass').focus()};n.appendChild(d)});
+  }catch(e){toast('Scan failed')}b.disabled=false;b.textContent='Scan again'};
+$('#b-join').onclick=async()=>{try{await api('/api/wifi',{ssid:$('#j-ssid').value,pass:$('#j-pass').value});toast('Connecting...');$('#join').style.display='none'}catch(e){toast(e.message)}};
+$('#b-joincancel').onclick=()=>$('#join').style.display='none';
+$('#b-forget').onclick=async()=>{if(confirm('Forget the saved Wi-Fi network?')){await api('/api/wifi/forget',{});toast('Forgotten');status()}};
+$('#b-portal').onclick=async()=>{const on=$('#b-portal').dataset.on!=='1';await api('/api/portal',{on});status()};
+$('#b-reboot').onclick=async()=>{if(confirm('Restart the panel?')){await api('/api/reboot',{});toast('Restarting...')}};
+$('#b-reset').onclick=async()=>{if(confirm('Erase all settings and Wi-Fi details, then restart?')){await api('/api/factory_reset',{});toast('Resetting...')}};
+$('#b-upload').onclick=()=>{const f=$('#fw').files[0];if(!f){toast('Choose a .bin file first');return}
+  if(!confirm('Install '+f.name+' ('+Math.round(f.size/1024)+' KB)? The panel restarts when done.'))return;
+  const x=new XMLHttpRequest();const bar=$('#fw-bar');bar.style.display='block';
+  x.upload.onprogress=e=>{if(e.lengthComputable)bar.firstElementChild.style.width=(100*e.loaded/e.total)+'%'};
+  x.onload=()=>{if(x.status===200){toast('Update installed - restarting');setTimeout(()=>location.reload(),15000)}else{toast('Update failed: '+x.responseText);bar.style.display='none'}};
+  x.onerror=()=>toast('Upload failed');x.open('POST','/api/ota');x.send(f)};
+
+
+/* ---------------- radio ---------------- */
+let R={stations:[]},dirty=false;
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function renderStations(){const l=$('#r-list');l.innerHTML='';
+  R.stations.forEach((s,i)=>{const d=document.createElement('div');d.className='st'+(i===R.playing_index?' on':'');
+    d.innerHTML='<div class="f"><input type="text" value="'+esc(s.name)+'"><input type="text" value="'+esc(s.url)+'"></div><div class="a"><button title="Play">&#9654;</button><button class="sec" title="Up">&#8593;</button><button class="sec" title="Down">&#8595;</button><button class="danger" title="Delete">&#10005;</button></div>';
+    const [n,u]=d.querySelectorAll('input');n.oninput=()=>{s.name=n.value;dirty=true};u.oninput=()=>{s.url=u.value;dirty=true};
+    const [p,up,dn,del]=d.querySelectorAll('button');
+    p.onclick=async()=>{if(dirty)await saveStations();R=await api('/api/radio',{action:'play',index:i});renderRadio()};
+    up.onclick=()=>{if(i>0){[R.stations[i-1],R.stations[i]]=[R.stations[i],R.stations[i-1]];dirty=true;renderStations()}};
+    dn.onclick=()=>{if(i<R.stations.length-1){[R.stations[i+1],R.stations[i]]=[R.stations[i],R.stations[i+1]];dirty=true;renderStations()}};
+    del.onclick=()=>{if(confirm('Delete '+s.name+'?')){R.stations.splice(i,1);dirty=true;renderStations()}};
+    l.appendChild(d)});
+  $('#r-save').textContent=dirty?'Save station list (unsaved changes)':'Save station list';
+}
+function renderRadio(){
+  $('#r-name').textContent=R.state==='stopped'?((R.stations[R.last]||{}).name||'Web Radio'):(R.name||R.url);
+  const p=$('#r-state');p.textContent=R.state;p.className='pill'+(R.state==='playing'?' live':'');
+  $('#r-title').textContent=R.state==='error'?R.error:(R.title||'');
+  $('#r-info').textContent=R.state==='stopped'?'':[R.codec,R.bitrate?R.bitrate+' kbps':'',R.sample_rate?(R.sample_rate/1000).toFixed(1)+' kHz':'',R.state==='playing'?'buffer '+R.buffer+'%':''].filter(x=>x).join('  ·  ');
+  $('#r-play').innerHTML=(R.state==='stopped'||R.state==='error')?'&#9654; Play':'&#9632; Stop';
+  if(document.activeElement!==$('#r-vol'))$('#r-vol').value=R.volume;
+  $('#r-resume').checked=!!R.resume;
+  const o=R.output||{};$('#r-outusb').checked=!!o.prefer_usb;
+  $('#r-out').textContent=o.usb_connected?('Plugged in: '+(o.usb_name||'USB audio')+(o.usb_active?' - playing on it now':o.prefer_usb?'':' - not used (switched off)')):
+    'No USB audio device plugged in - using the built-in speaker. Alarms always use the built-in speaker.';
+}
+async function radioPoll(full){try{const r=await api('/api/radio');const keep=dirty?R.stations:null;R=r;if(keep)R.stations=keep;renderRadio();if(full||!dirty)renderStations()}catch(e){}}
+async function saveStations(){try{R=await api('/api/stations',R.stations.filter(s=>s.url));dirty=false;renderStations();renderRadio();toast('Stations saved')}catch(e){toast('Save failed: '+e.message)}}
+$('#r-play').onclick=async()=>{const stop=!(R.state==='stopped'||R.state==='error');R=await api('/api/radio',stop?{action:'stop'}:{action:'play'});renderRadio();renderStations()};
+function step(d){const n=R.stations.length;if(!n)return;let i=R.playing_index>=0?R.playing_index:R.last;i=((i<0?0:i)+d+n)%n;api('/api/radio',{action:'play',index:i}).then(r=>{R=r;renderRadio();renderStations()})}
+$('#r-prev').onclick=()=>step(-1);$('#r-next').onclick=()=>step(1);
+$('#r-vol').onchange=e=>api('/api/radio',{volume:Number(e.target.value)});
+$('#r-resume').onchange=e=>api('/api/radio',{resume:e.target.checked}).then(()=>toast('Saved'));
+$('#r-outusb').onchange=e=>api('/api/radio',{out_usb:e.target.checked}).then(r=>{R=r;renderRadio();toast('Saved')});
+$('#r-add').onclick=()=>{const u=$('#r-new-url').value.trim(),n=$('#r-new-name').value.trim();
+  if(!/^https?:\/\//.test(u)){toast('Address must start with http:// or https://');return}
+  R.stations.push({name:n||u,url:u});$('#r-new-url').value='';$('#r-new-name').value='';saveStations()};
+$('#r-save').onclick=saveStations;
+const MIRRORS=['de1','de2','fi1','nl1'];
+async function rbSearch(q){for(const m of MIRRORS){try{const r=await fetch('https://'+m+'.api.radio-browser.info/json/stations/search?name='+encodeURIComponent(q)+'&limit=60&hidebroken=true&order=clickcount&reverse=true');if(r.ok)return r.json()}catch(e){}}throw new Error('Radio Browser not reachable')}
+$('#r-search').onclick=async()=>{const q=$('#r-q').value.trim();if(!q)return;const box=$('#r-results');box.textContent='Searching...';
+  try{let list=(await rbSearch(q)).filter(s=>/^(MP3|AAC|AAC\+)$/i.test(s.codec)&&!/\.m3u8/i.test(s.url_resolved));
+    box.innerHTML='';if(!list.length){box.textContent='No playable stations found.';return}
+    list.slice(0,30).forEach(s=>{const d=document.createElement('div');d.className='net';
+      d.innerHTML='<div><b></b><br><span></span></div><div class="a" style="display:flex;gap:6px"><button>&#9654;</button><button class="sec">Add</button></div>';
+      d.querySelector('b').textContent=s.name.trim();d.querySelector('span').textContent=[s.countrycode,s.codec+' '+s.bitrate+' kbps',s.tags].filter(x=>x).join(' · ');
+      const [p,a]=d.querySelectorAll('button');
+      p.onclick=async e=>{e.stopPropagation();R=await api('/api/radio',{action:'play_url',name:s.name.trim(),url:s.url_resolved});renderRadio();toast('Playing')};
+      a.onclick=e=>{e.stopPropagation();if(R.stations.some(x=>x.url===s.url_resolved)){toast('Already in your stations');return}R.stations.push({name:s.name.trim(),url:s.url_resolved});saveStations();a.textContent='Added';a.disabled=true};
+      box.appendChild(d)});
+  }catch(e){box.textContent=e.message}};
+$('#r-q').addEventListener('keydown',e=>{if(e.key==='Enter')$('#r-search').click()});
+
+/* ---------------- lock ---------------- */
+let K=null;
+function renderLock(){if(!K)return;
+  $('#k-none').style.display=K.admin_set?'none':'block';$('#k-main').style.display=K.admin_set?'block':'none';
+  $('#k-r1n').textContent=K.relay1.name;const s1=$('#k-r1s');s1.textContent=K.relay1.unlocked?'UNLOCKED':'LOCKED';s1.className=K.relay1.unlocked?'green':'red';
+  $('#k-r1x').textContent=K.relay1.relock_in?('locks again in '+K.relay1.relock_in+' s'):'';
+  $('#k-r2n').textContent=K.relay2.name;$('#k-r2s').textContent=K.relay2.on?'ON':'OFF';$('#k-r2').textContent='Switch '+(K.relay2.on?'off':'on');
+  $('#k-unlock').disabled=!K.web_control;$('#k-r2').disabled=!K.web_control;
+  $('#k-webnote').textContent=K.web_control?'':'Unlocking from this page is turned off. Locking always works.';
+  const u=$('#k-users');u.innerHTML='';K.users.forEach(x=>{const d=document.createElement('div');d.className='row';
+    d.innerHTML='<label></label><input type="password" inputmode="numeric" maxlength="6" placeholder="new code" style="width:120px"><button class="sec">Set</button><button class="danger">&#10005;</button>';
+    d.querySelector('label').textContent=x.label;const [inp]=d.querySelectorAll('input');const [set,del]=d.querySelectorAll('button');
+    set.onclick=()=>lockPost({user:{idx:x.idx,code:inp.value}},'Code changed');
+    del.onclick=()=>{if(confirm('Delete the code for '+x.label+'?'))lockPost({delete_user:x.idx},'Deleted')};u.appendChild(d)});
+  const f=(id,v)=>{const e=$(id);if(document.activeElement!==e){if(e.type==='checkbox')e.checked=v;else e.value=v}};
+  f('#k-n1',K.relay1.name);f('#k-mode',K.relay1.mode);f('#k-pulse',K.relay1.pulse_s);f('#k-n2',K.relay2.name);f('#k-r2pin',K.relay2.needs_pin);
+  f('#k-web',K.web_control);f('#k-att',K.max_attempts);f('#k-lo',K.lockout_s);
+  $('#k-log').innerHTML=K.log.map(e=>'<div>'+(e.t>1e9?new Date(e.t*1000).toLocaleString():'(time not set)')+' &nbsp; '+esc(e.text)+' - '+esc(e.who)+'</div>').join('')||'No activity yet';
+}
+async function lockPoll(){try{K=await api('/api/lock');renderLock()}catch(e){}}
+async function lockPost(b,msg){try{K=await api('/api/lock',b);renderLock();if(msg)toast(msg)}catch(e){toast(e.message)}}
+$('#k-unlock').onclick=()=>lockPost({action:'unlock'},'Unlocked');
+$('#k-lock').onclick=()=>lockPost({action:'lock'},'Locked');
+$('#k-r2').onclick=()=>lockPost({action:K.relay2.on?'r2_off':'r2_on'});
+$('#k-add').onclick=()=>{lockPost({user:{idx:-1,label:$('#k-new-label').value||'User',code:$('#k-new-code').value}},'Code added');$('#k-new-code').value='';$('#k-new-label').value=''};
+$('#k-admin-go').onclick=()=>{if(confirm('Change the admin code? You will need the new code to sign in.'))lockPost({admin_code:$('#k-admin').value},'Admin code changed');$('#k-admin').value=''};
+$('#k-save').onclick=()=>lockPost({config:{relay1_name:$('#k-n1').value,relay2_name:$('#k-n2').value,relay1_mode:Number($('#k-mode').value),relay1_pulse_s:Number($('#k-pulse').value),
+  relay2_needs_pin:$('#k-r2pin').checked,web_control:$('#k-web').checked,max_attempts:Number($('#k-att').value),lockout_s:Number($('#k-lo').value)}},'Saved');
+$('#k-logout').onclick=async()=>{await fetch('/api/logout',{method:'POST'});TOKEN='';sessionStorage.removeItem('p4tok');location.reload()};
+
+/* ---------------- photos ---------------- */
+let PD='';
+function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'}
+function pjoin(d,n){return d?d+'/'+n:n}
+async function photosLoad(){try{const r=await api('/api/photos?dir='+encodeURIComponent(PD));renderPhotos(r)}catch(e){$('#p-list').textContent=e.message}}
+function renderPhotos(r){
+  const sd=r.sd;$('#p-sd').textContent=sd.state==='ready'?('microSD card: '+(sd.used_mb/1024).toFixed(1)+' of '+(sd.total_mb/1024).toFixed(1)+' GB used'):
+    sd.state==='mounting'?'Reading the microSD card...':'No microSD card. '+(sd.error||'');
+  $('#p-path').textContent='/'+(PD||'');$('#p-up').disabled=!PD;
+  const l=$('#p-list');l.innerHTML='';
+  const ents=(r.entries||[]).sort((a,b)=>(b.dir-a.dir)||a.name.localeCompare(b.name,undefined,{numeric:true}));
+  if(sd.state==='ready'&&!ents.length)l.innerHTML='<div class="t" style="color:var(--muted)">'+(r.error||'Empty folder')+'</div>';
+  ents.forEach(e=>{const d=document.createElement('div');d.className='net';
+    d.innerHTML='<div><b></b><br><span></span></div><div style="display:flex;gap:6px;align-items:center"></div>';
+    d.querySelector('b').textContent=(e.dir?'\u{1F4C1} ':'')+e.name;d.querySelector('span').textContent=e.dir?'folder':fmtSize(e.size);
+    const a=d.lastChild,p=pjoin(PD,e.name);
+    if(e.dir){d.onclick=()=>{PD=p;photosLoad()}}
+    else{const v=document.createElement('button');v.className='sec';v.textContent='View';v.onclick=ev=>{ev.stopPropagation();window.open('/api/photo?path='+encodeURIComponent(p)+'&auth='+encodeURIComponent(TOKEN),'_blank')};a.appendChild(v)}
+    const x=document.createElement('button');x.className='danger';x.innerHTML='&#10005;';
+    x.onclick=async ev=>{ev.stopPropagation();if(!confirm('Delete '+e.name+'?'))return;try{await api('/api/photos/delete',{path:p});toast('Deleted');photosLoad()}catch(err){toast(err.message)}};
+    a.appendChild(x);l.appendChild(d)});
+}
+$('#p-up').onclick=()=>{const i=PD.lastIndexOf('/');PD=i<0?'':PD.slice(0,i);photosLoad()};
+$('#p-refresh').onclick=photosLoad;
+$('#p-frame').onclick=()=>{queue('photo_dir',PD);queue('saver_mode',1);toast('Photo frame: '+(PD||'whole card'))};
+$('#p-mkdir').onclick=async()=>{const n=prompt('New folder name');if(!n)return;try{await api('/api/photos/mkdir',{path:pjoin(PD,n.replace(/[\\/]/g,'_'))});photosLoad()}catch(e){toast(e.message)}};
+function upOne(f,i,n){return new Promise((res,rej)=>{const x=new XMLHttpRequest();
+  x.open('POST','/api/photos/upload?dir='+encodeURIComponent(PD)+'&name='+encodeURIComponent(f.name));x.setRequestHeader('X-Auth',TOKEN);
+  x.upload.onprogress=e=>{if(e.lengthComputable)$('#p-bar div').style.width=((i+e.loaded/e.total)/n*100)+'%'};
+  x.onload=()=>x.status===200?res():(x.status===401?(showLogin(),rej(new Error('Sign in required'))):rej(new Error(x.responseText||('HTTP '+x.status))));
+  x.onerror=()=>rej(new Error('Upload failed'));x.send(f)})}
+$('#p-upload').onclick=async()=>{const fs=[...$('#p-files').files];if(!fs.length){toast('Choose photos first');return}
+  $('#p-bar').style.display='block';$('#p-upload').disabled=true;let ok=0;
+  for(let i=0;i<fs.length;i++){try{await upOne(fs[i],i,fs.length);ok++}catch(e){toast(fs[i].name+': '+e.message);if(e.message==='Sign in required')break}}
+  $('#p-upload').disabled=false;$('#p-bar').style.display='none';$('#p-bar div').style.width='0';$('#p-files').value='';toast(ok+' photo'+(ok===1?'':'s')+' uploaded');photosLoad()};
+
+$('#b-c6').onclick=()=>{const f=$('#c6fw').files[0];if(!f){toast('Choose the esp32c6 .bin file first');return}
+  if(!confirm('Install '+f.name+' on the Wi-Fi module? The panel restarts afterwards. Keep it powered.'))return;
+  const x=new XMLHttpRequest();x.open('POST','/api/c6_ota');x.setRequestHeader('X-Auth',TOKEN);$('#c6-bar').style.display='block';$('#b-c6').disabled=true;
+  x.upload.onprogress=e=>{if(e.lengthComputable)$('#c6-bar div').style.width=(e.loaded/e.total*100)+'%'};x.upload.onload=()=>toast('Sent - the panel is now writing it to the Wi-Fi module (about a minute)');
+  x.onload=()=>{$('#b-c6').disabled=false;if(x.status===200){toast('Wi-Fi module updated - restarting');setTimeout(()=>location.reload(),15000)}else if(x.status===401)showLogin();else toast(x.responseText||('HTTP '+x.status))};
+  x.onerror=()=>{$('#b-c6').disabled=false;toast('Upload failed')};x.send(f)};
+/* ---- alarms ---- */
+const DAYS=['S','M','T','W','T','F','S'];
+function hhmm(a){return String(a.hour).padStart(2,'0')+':'+String(a.minute).padStart(2,'0')}
+function renderAlarms(){
+  if(!S.alarms)return;
+  const l=$('#a-list');if(l.contains(document.activeElement))return;   /* don't redraw under the cursor */
+  l.innerHTML='';let used=0;
+  S.alarms.forEach((a,i)=>{if(!a.used)return;used++;
+    const d=document.createElement('div');d.className='al'+(a.on?'':' off');
+    d.innerHTML='<label class="sw"><input type="checkbox" class="on"><span></span></label><input type="time" class="tm">'+
+      '<div class="days">'+DAYS.map((x,k)=>'<label title="'+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][k]+'"><input type="checkbox" data-d="'+k+'"><span>'+x+'</span></label>').join('')+'</div>'+
+      '<select class="snd"><option value="2">Radio</option><option value="0">Beeps</option><option value="1">Buzzer</option></select>'+
+      '<input type="text" class="lbl" maxlength="23" placeholder="Label"><button class="del" title="Delete">&#10005;</button>';
+    d.querySelector('.on').checked=a.on;d.querySelector('.tm').value=hhmm(a);d.querySelector('.snd').value=a.sound;d.querySelector('.lbl').value=a.label;
+    d.querySelectorAll('[data-d]').forEach(c=>c.checked=!!(a.days&(1<<c.dataset.d)));
+    const save=()=>queue('alarms',S.alarms);
+    d.querySelector('.on').onchange=e=>{a.on=e.target.checked;d.classList.toggle('off',!a.on);save()};
+    d.querySelector('.tm').onchange=e=>{const[h,m]=e.target.value.split(':').map(Number);if(isNaN(h))return;a.hour=h;a.minute=m;a.on=true;d.querySelector('.on').checked=true;save()};
+    d.querySelectorAll('[data-d]').forEach(c=>c.onchange=()=>{a.days^=(1<<c.dataset.d);save()});
+    d.querySelector('.snd').onchange=e=>{a.sound=Number(e.target.value);save()};
+    d.querySelector('.lbl').onchange=e=>{a.label=e.target.value;save()};
+    d.querySelector('.del').onclick=()=>{if(confirm('Delete this alarm?')){Object.assign(a,{used:false,on:false,hour:0,minute:0,days:0,sound:0,label:''});save();renderAlarms()}};
+    l.appendChild(d)});
+  if(!used)l.innerHTML='<div class="amuted" style="padding:8px 0">No alarms yet.</div>';
+  $('#a-add').disabled=used>=S.alarms.length;
+  $('#a-station').textContent=S.last_play_name?'Radio alarms play the last station: '+S.last_play_name:'Radio alarms: play a station first (otherwise beeps are used).';
+}
+$('#a-add').onclick=()=>{const a=S.alarms.find(x=>!x.used);if(!a)return;Object.assign(a,{used:true,on:true,hour:7,minute:0,days:62,sound:2,label:''});queue('alarms',S.alarms);renderAlarms()};
+$('#a-stop').onclick=()=>api('/api/alarm',{action:'stop'}).then(status);
+$('#a-snooze').onclick=()=>api('/api/alarm',{action:'snooze'}).then(status);
+function renderAlarmStatus(a){if(!a)return;
+  $('#a-ring').style.display=a.ringing?'block':'none';$('#a-ring-t').textContent='\u23F0 '+(a.label||'Alarm')+' is ringing';
+  $('#a-next').textContent=a.next?(a.next.startsWith('Snoozed')?a.next:'Next alarm: '+a.next):'No alarm set';}
+/* ---- weather ---- */
+let W=null;
+const imp=()=>S.wx_units===1;
+function tC(c){return c==null?'-':Math.round(imp()?c*9/5+32:c)+'\u00B0'}
+function wind(ms){return ms==null?'-':imp()?Math.round(ms*2.23694)+' mph':Math.round(ms*3.6)+' km/h'}
+function hm(t){if(!t)return'-';return new Date(t*1000).toLocaleTimeString([], {hour:'numeric',minute:'2-digit',hour12:!S.clock_24h})}
+function compass(d){return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(((d%360)+360)%360/22.5)%16]}
+function renderWx(){const n=$('#w-now');
+  if(!S.wx_key_set){n.innerHTML='<span class="amuted">Add your API key below to get the weather.</span>';return}
+  if(!S.wx_locs||!S.wx_locs.length){n.innerHTML='<span class="amuted">Add a place below.</span>';return}
+  if(!W||!W.valid){n.innerHTML='<span class="amuted">'+esc(W&&W.error?W.error:'Getting the weather...')+'</span>';return}
+  const aq=S.wx_aq_scale===1?['US AQI',W.us_aqi]:S.wx_aq_scale===2?['Air quality (1-5)',W.aqi_owm]:['AQHI',W.aqhi>10?'10+':W.aqhi];
+  let feels=['Feels like',tC(W.feels_c)];if(W.wind_chill_c!=null)feels=['Wind chill',tC(W.wind_chill_c)];else if(W.humidex!=null&&!imp())feels=['Humidex',Math.round(W.humidex)];
+  const pr=W.pressure_hpa==null?'-':imp()?(W.pressure_hpa*0.02953).toFixed(2)+' inHg':(W.pressure_hpa/10).toFixed(1)+' kPa';
+  const cells=[[feels[0],feels[1]],['High / low',tC(W.high_c)+' / '+tC(W.low_c)],['Precipitation',W.pop!=null?Math.round(W.pop*100)+'%':'-'],['Humidity',Math.round(W.humidity)+'%'],
+    ['Wind',wind(W.wind_ms)+' '+compass(W.wind_deg)+(W.gust_ms?' (gusts '+wind(W.gust_ms)+')':'')],['UV index',W.uvi!=null?Math.round(W.uvi):'needs One Call'],
+    [aq[0],aq[1]!=null?aq[1]:'-'],['Pressure',pr],['Dew point',tC(W.dew_point_c)],['Sunrise / sunset',hm(W.sunrise)+' / '+hm(W.sunset)]];
+  n.innerHTML='<img src="https://openweathermap.org/img/wn/'+esc(W.icon)+'@2x.png" width="80" height="80" alt="" onerror="this.remove()"><div class="t">'+tC(W.temp_c)+'</div><div class="d"><b>'+esc(W.place)+'</b><span>'+esc(W.description)+'</span>'+
+    (W.alert?'<span style="color:#ff8a3d">&#9888; '+esc(W.alert)+'</span>':'')+'<small class="amuted">OpenWeather '+esc(W.source)+(W.fetched?', updated '+hm(W.fetched):'')+'</small></div>'+
+    '<div class="wgrid">'+cells.map(c=>'<div>'+esc(c[0])+'<b>'+esc(String(c[1]))+'</b></div>').join('')+'</div>';
+}
+function renderWxSettings(){
+  $('#w-keyst').textContent=S.wx_key_set?('Key saved (ends in '+S.wx_key_tail+') - One Call: '+(W?W.onecall:'-')):'No key yet';
+  const l=$('#w-locs');l.innerHTML='';
+  (S.wx_locs||[]).forEach((p,i)=>{const d=document.createElement('div');d.className='loc';
+    d.innerHTML='<input type="radio" name="wloc"><label></label><button class="sec del" title="Remove">&#10005;</button>';
+    d.querySelector('input').checked=i===S.wx_loc_sel;d.querySelector('label').textContent=p.name+(p.region?', '+p.region:'')+', '+p.country;
+    const pick=()=>{queue('wx_loc_sel',i);W=null;renderWx();setTimeout(wxPoll,4000)};
+    d.querySelector('input').onchange=pick;d.querySelector('label').onclick=pick;
+    d.querySelector('button').onclick=()=>{if(!confirm('Remove '+p.name+'?'))return;const a=S.wx_locs.slice();a.splice(i,1);let sel=S.wx_loc_sel;if(sel>=a.length)sel=Math.max(0,a.length-1);else if(sel>i)sel--;queue('wx_locs',a);queue('wx_loc_sel',sel)};
+    l.appendChild(d)});
+  if(!(S.wx_locs||[]).length)l.innerHTML='<div class="amuted">No places yet.</div>';
+  renderWx();
+}
+async function wxPoll(){try{W=await api('/api/weather');renderWx();$('#w-keyst').textContent=S.wx_key_set?('Key saved (ends in '+S.wx_key_tail+') - One Call: '+W.onecall):'No key yet'}catch(e){}}
+$('#w-keysave').onclick=async()=>{const k=$('#w-key').value.trim();if(!k&&!confirm('Remove the saved key?'))return;
+  try{S=await api('/api/settings',{wx_key:k});$('#w-key').value='';render();toast(k?'Key saved - checking it with OpenWeather':'Key removed');W=null;renderWx();setTimeout(wxPoll,6000)}catch(e){toast(e.message)}};
+$('#w-search').onclick=async()=>{const q=$('#w-q').value.trim();if(!q)return;const b=$('#w-search'),r=$('#w-results');b.disabled=true;b.textContent='Searching...';r.innerHTML='';
+  try{const list=await api('/api/weather/search?q='+encodeURIComponent(q));
+    list.forEach(p=>{const d=document.createElement('div');d.className='net';d.innerHTML='<b></b><span>Add</span>';d.querySelector('b').textContent=p.name+(p.region?', '+p.region:'')+', '+p.country;
+      d.onclick=()=>{const a=(S.wx_locs||[]).slice();if(a.length>=8){toast('The list is full (8 places)');return}a.push(p);queue('wx_locs',a);queue('wx_loc_sel',a.length-1);r.innerHTML='';$('#w-q').value='';W=null;renderWx();setTimeout(wxPoll,6000)};r.appendChild(d)});
+  }catch(e){r.innerHTML='<div class="amuted">'+esc(e.message)+'</div>'}b.disabled=false;b.textContent='Search'};
+$('#w-q').addEventListener('keydown',e=>{if(e.key==='Enter')$('#w-search').click()});
+let started=false;
+async function start(){
+  if(started)return;started=true;
+  radioPoll(true);setInterval(()=>radioPoll(false),3000);
+  lockPoll();setInterval(lockPoll,3000);
+  photosLoad();
+  try{TZ=await api('/api/tz');const regions=[...new Set(TZ.map(z=>z.region))];
+    $('#tz-region').innerHTML=regions.map(r=>'<option>'+r+'</option>').join('');
+    S=await api('/api/settings');render()}catch(e){toast('Could not load settings')}
+  status();setInterval(status,4000);
+  wxPoll();setInterval(wxPoll,60000);
+}
+(async()=>{
+  try{const a=await (await fetch('/api/auth',{headers:{'X-Auth':TOKEN}})).json();
+    if(a.admin_set&&!a.ok){showLogin();status();return}}catch(e){}
+  start();
+})();
+</script>
+</body>
+</html>
