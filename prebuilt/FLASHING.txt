@@ -1,0 +1,59 @@
+P4Box 1.0.0 - ready-to-flash images (Arduino core 3.3.12)
+================================================================
+
+Your panel has a revision v1.3 chip  ->  use the *_v1_* files.
+(v3.x chips use the *_v3_* files.)
+
+  P4Box_v1_full.bin   complete image  -> write at address 0x0   (ONLY 0x0)
+  P4Box_v1_app.bin    app only        -> web page "Firmware update" later, never at 0x0
+  parts_v1\           the same image as 4 separate files, for tools that want them
+
+IMPORTANT: on the ESP32-P4 the bootloader lives at 0x2000, and the _full file already
+contains it at the right place.  If the boot log says
+      invalid header: 0xffffffff
+then nothing valid is at 0x2000 - the full file was written at the wrong address
+(0x1000 / 0x2000 instead of 0x0), or only the app file was flashed.  Erase and flash again.
+
+----------------------------------------------------------------
+Option A - esptool (command line)
+----------------------------------------------------------------
+  esptool --chip esp32p4 -p COM5 -b 921600 erase_flash
+  esptool --chip esp32p4 -p COM5 -b 921600 write_flash 0x0 P4Box_v1_full.bin
+
+(Arduino installs esptool here on Windows:
+ %LOCALAPPDATA%\Arduino15\packages\esp32\tools\esptool_py\<version>\esptool.exe
+ Older esptool versions are called esptool.py.)
+
+Or just double-click flash_v1.bat and type the COM port.
+
+----------------------------------------------------------------
+Option B - Espressif Flash Download Tool (Windows)
+----------------------------------------------------------------
+  ChipType ESP32-P4, WorkMode Develop, LoadMode UART
+  Tick ONE line:   P4Box_v1_full.bin   @ 0x0
+  SPI SPEED 80MHz, SPI MODE DIO, FLASH SIZE 32MB (or "DoNotChgBin" ticked)
+  ERASE first, then START.
+
+  Or use the four parts instead (all ticked):
+    parts_v1\bootloader.bin   @ 0x2000
+    parts_v1\partitions.bin   @ 0x8000
+    parts_v1\boot_app0.bin    @ 0xe000
+    parts_v1\P4Box.ino.bin    @ 0x10000
+
+----------------------------------------------------------------
+Option C - browser (Chrome/Edge): https://espressif.github.io/esptool-js/
+----------------------------------------------------------------
+  Connect, Erase Flash, then add P4Box_v1_full.bin at Flash Address 0x0, Program.
+
+----------------------------------------------------------------
+Option D - Arduino IDE
+----------------------------------------------------------------
+  Open P4Box.ino, Tools > Chip Variant "Before v3.00" (plus the settings in README), Upload.
+  Arduino writes all four parts at the right addresses by itself.
+
+----------------------------------------------------------------
+Wi-Fi module (ESP32-C6) firmware: esp32c6-v2.12.13.bin
+----------------------------------------------------------------
+NOT for esptool on the P4.  Upload it from the panel's web page:
+System > "Wi-Fi module (ESP32-C6) firmware" > choose the file > Update Wi-Fi module.
+Only needed if Wi-Fi scanning / connecting does not work.
